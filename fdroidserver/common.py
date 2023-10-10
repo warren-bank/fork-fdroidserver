@@ -2794,7 +2794,10 @@ def FDroidPopenBytes(commands, cwd=None, envs=None, output=True, stderr_to_stdou
     result = PopenResult()
     p = None
     try:
-        p = subprocess.Popen(commands, cwd=cwd, shell=False, env=process_env,
+        cmd   = commands[0]
+        shell = cmd.endswith('.cmd') or cmd.endswith('.bat')
+
+        p = subprocess.Popen(commands, cwd=cwd, shell=shell, env=process_env,
                              stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                              stderr=stderr_param)
     except OSError as e:
@@ -3664,6 +3667,13 @@ def find_command(command):
             exe_file = os.path.join(path, command)
             if is_exe(exe_file):
                 return exe_file
+            if (os.name == 'nt'):
+                if is_exe(exe_file + '.exe'):
+                    return exe_file + '.exe'
+                if is_exe(exe_file + '.cmd'):
+                    return exe_file + '.cmd'
+                if is_exe(exe_file + '.bat'):
+                    return exe_file + '.bat'
 
     return None
 
