@@ -4093,8 +4093,8 @@ def get_android_tools_versions():
     """Get a list of the versions of all installed Android SDK/NDK components."""
     global config
     sdk_path = config['sdk_path']
-    if sdk_path[-1] != '/':
-        sdk_path += '/'
+    if sdk_path[-1] != os.sep:
+        sdk_path += os.sep
     components = []
     for ndk_path in config.get('ndk_paths', []):
         version = get_ndk_version(ndk_path)

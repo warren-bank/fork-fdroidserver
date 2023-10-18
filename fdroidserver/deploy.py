@@ -302,7 +302,7 @@ def sync_from_localcopy(repo_section, local_copy_dir):
     # trailing slashes have a meaning in rsync which is not needed here, so
     # make sure both paths have exactly one trailing slash
     common.local_rsync(options,
-                       os.path.join(local_copy_dir, repo_section).rstrip('/') + '/',
+                       os.path.join(local_copy_dir, repo_section).rstrip(os.sep) + os.sep,
                        repo_section.rstrip('/') + '/')
 
     offline_copy = os.path.join(local_copy_dir, BINARY_TRANSPARENCY_DIR)
@@ -381,7 +381,7 @@ def update_servergitmirrors(servergitmirrors, repo_section):
 
         # rsync is very particular about trailing slashes
         common.local_rsync(options,
-                           repo_section.rstrip('/') + '/',
+                           repo_section.rstrip(os.sep) + os.sep,
                            git_repodir.rstrip('/') + '/')
 
         # use custom SSH command if identity_file specified
@@ -729,7 +729,11 @@ def main():
     else:
         local_copy_dir = None
     if local_copy_dir is not None:
-        fdroiddir = local_copy_dir.rstrip('/')
+        if local_copy_dir[-1] != os.sep:
+            local_copy_dir += os.sep
+        local_copy_dir = local_copy_dir.replace('/', os.sep)
+        local_copy_dir = local_copy_dir.replace((os.sep + os.sep), os.sep)
+        fdroiddir = local_copy_dir.rstrip(os.sep)
         if os.path.exists(fdroiddir) and not os.path.isdir(fdroiddir):
             logging.error(_('local_copy_dir must be directory, not a file!'))
             sys.exit(1)
@@ -744,11 +748,8 @@ def main():
         if standardwebroot and repobase != 'fdroid':
             logging.error(_('local_copy_dir does not end with "fdroid", '
                             + 'perhaps you meant: "{path}"')
-                          .format(path=fdroiddir + '/fdroid'))
+                          .format(path=fdroiddir + os.sep + 'fdroid'))
             sys.exit(1)
-        if local_copy_dir[-1] != '/':
-            local_copy_dir += '/'
-        local_copy_dir = local_copy_dir.replace('//', '/')
         if not os.path.exists(fdroiddir):
             os.mkdir(fdroiddir)
 

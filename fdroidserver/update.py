@@ -832,7 +832,7 @@ def copy_triple_t_store_metadata(apps):
                 for matches in setting_gradle_pattern.findall(data):
                     for m in matches:
                         if m:
-                            gradle_path = m.replace(':', '/')
+                            gradle_path = m.replace(':', os.sep)
                             p = os.path.join('build', packageName, gradle_path, 'src', 'main', 'play')
                             if os.path.exists(p):
                                 gradle_subdirs.add(p)
@@ -848,7 +848,7 @@ def copy_triple_t_store_metadata(apps):
         for d in sorted(gradle_subdirs):
             logging.debug('Triple-T Gradle Play Publisher: ' + d)
             for root, dirs, files in os.walk(d):
-                segments = root.split('/')
+                segments = root.split(os.sep)
                 if segments[-2] == 'listings' or segments[-2] == 'release-notes':
                     locale = segments[-1]
                 else:
@@ -942,7 +942,7 @@ def insert_localized_app_metadata(apps):
         if not os.path.isdir(srcd):
             continue
         for root, dirs, files in os.walk(srcd):
-            segments = root.split('/')
+            segments = root.split(os.sep)
             packageName = segments[1]
             if packageName not in apps:
                 logging.debug(packageName + ' does not have app metadata, skipping l18n scan.')
@@ -1012,7 +1012,7 @@ def insert_localized_app_metadata(apps):
         for f in sorted(glob.glob(os.path.join(d, '*.*')) + glob.glob(os.path.join(d, '*Screenshots', '*.*'))):
             if not os.path.isfile(f):
                 continue
-            segments = f.split('/')
+            segments = f.split(os.sep)
             packageName = segments[1]
             locale = segments[2]
             screenshotdir = segments[3]

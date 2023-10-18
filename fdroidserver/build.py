@@ -173,10 +173,10 @@ def build_server(app, build, vcs, build_dir, output_dir, log_dir, force):
             ftp.chdir(posixpath.join(homedir, 'build', 'extlib'))
             for lib in build.extlibs:
                 lib = lib.strip()
-                libsrc = os.path.join('build/extlib', lib)
+                libsrc = os.path.join('build', 'extlib', lib)
                 if not os.path.exists(libsrc):
                     raise BuildException("Missing extlib {0}".format(libsrc))
-                lp = lib.split('/')
+                lp = lib.split(os.sep)
                 for d in lp[:-1]:
                     if d not in ftp.listdir():
                         ftp.mkdir(d)
@@ -189,7 +189,7 @@ def build_server(app, build, vcs, build_dir, output_dir, log_dir, force):
         if build.srclibs:
             for lib in build.srclibs:
                 srclibpaths.append(
-                    common.getsrclib(lib, 'build/srclib', basepath=True, prepare=False))
+                    common.getsrclib(lib, os.path.join('build', 'srclib'), basepath=True, prepare=False))
 
         # If one was used for the main source, add that too.
         basesrclib = vcs.getsrclib()
@@ -201,7 +201,7 @@ def build_server(app, build, vcs, build_dir, output_dir, log_dir, force):
             if not os.path.exists(lib):
                 raise BuildException("Missing srclib directory '" + lib + "'")
             fv = '.fdroidvcs-' + name
-            ftp.put(os.path.join('build/srclib', fv), fv)
+            ftp.put(os.path.join('build', 'srclib', fv), fv)
             send_dir(lib)
             # Copy the metadata file too...
             ftp.chdir(posixpath.join(homedir, 'srclibs'))
